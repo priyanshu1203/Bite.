@@ -1,5 +1,4 @@
-import React from 'react';
-import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom';
+import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice';
 import { toggleSidebar, setSidebarOpen, toggleTheme } from '../store/uiSlice';
@@ -16,7 +15,6 @@ import {
   Flame,
   Sun,
   Moon,
-  Droplet
 } from 'lucide-react';
 import OfflineBadge from './OfflineBadge';
 

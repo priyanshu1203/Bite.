@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addMeal } from '../store/mealSlice';
@@ -6,13 +6,11 @@ import api from '../services/api';
 import BarcodeScannerModal from '../components/BarcodeScannerModal';
 import {
   Camera,
-  Search,
   Upload,
   Layers,
   Sparkles,
   RefreshCw,
   Plus,
-  Compass,
   AlertCircle,
   CheckCircle2,
   Trash2,

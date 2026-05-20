@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Droplet, Plus } from 'lucide-react';
 
 const WaterTracker = ({ current = 0, target = 2000, onAdd }) => {
