@@ -68,7 +68,7 @@ const Layout = () => {
             </div>
             <div className="min-w-0">
               <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-400 bg-clip-text text-transparent">
-                FitAI Nutrition
+                Bite FitAI Nutrition
               </h1>
               <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
                 MERN Stack Tracker

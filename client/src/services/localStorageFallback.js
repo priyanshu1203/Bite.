@@ -3,6 +3,17 @@ const MEALS_KEY = 'ai_nutrition_tracker_meals';
 const WATER_KEY = 'ai_nutrition_tracker_water';
 const PROFILE_KEY = 'ai_nutrition_tracker_profile';
 const SYNC_QUEUE_KEY = 'ai_nutrition_tracker_sync_queue';
+const LOCAL_USERS_KEY = 'ai_nutrition_tracker_local_users';
+
+const calculateCalorieGoal = ({ age = 25, weight = 70, height = 170, fitnessGoal = 'Maintain' }) => {
+  const baseGoal = Math.round(10 * Number(weight) + 6.25 * Number(height) - 5 * Number(age) + 5);
+
+  if (fitnessGoal === 'Lose Weight') return Math.max(baseGoal - 350, 1200);
+  if (fitnessGoal === 'Gain Muscle') return baseGoal + 300;
+  return baseGoal;
+};
+
+const createLocalToken = (email) => `local_${Date.now()}_${btoa(email).replace(/=+$/, '')}`;
 
 // Helper to get items
 const getLocalData = (key, defaultVal = []) => {
@@ -26,8 +37,68 @@ const setLocalData = (key, data) => {
 
 export const localStorageFallback = {
   // --- AUTH / PROFILE ---
+  registerUser: (userData) => {
+    const users = getLocalData(LOCAL_USERS_KEY, []);
+    const normalizedEmail = userData.email.toLowerCase().trim();
+    const existing = users.find((user) => user.email === normalizedEmail);
+
+    if (existing) {
+      throw new Error('A local account already exists for this email. Please sign in.');
+    }
+
+    const profile = {
+      _id: `local_user_${Date.now()}`,
+      name: userData.name,
+      email: normalizedEmail,
+      age: Number(userData.age) || 25,
+      weight: Number(userData.weight) || 70,
+      height: Number(userData.height) || 170,
+      fitnessGoal: userData.fitnessGoal || 'Maintain',
+      calorieGoal: userData.calorieGoal || calculateCalorieGoal(userData),
+      role: 'user',
+      isLocalOnly: true,
+    };
+
+    const localUser = {
+      ...profile,
+      password: userData.password,
+    };
+
+    const sessionUser = {
+      ...profile,
+      token: createLocalToken(normalizedEmail),
+    };
+
+    setLocalData(LOCAL_USERS_KEY, [...users, localUser]);
+    setLocalData(PROFILE_KEY, profile);
+    return sessionUser;
+  },
+
+  loginUser: ({ email, password }) => {
+    const normalizedEmail = email.toLowerCase().trim();
+    const users = getLocalData(LOCAL_USERS_KEY, []);
+    const user = users.find(
+      (localUser) => localUser.email === normalizedEmail && localUser.password === password
+    );
+
+    if (!user) {
+      throw new Error('Local account not found. Create an account once while MongoDB is unavailable.');
+    }
+
+    const profile = { ...user };
+    delete profile.password;
+    const sessionUser = {
+      ...profile,
+      token: createLocalToken(normalizedEmail),
+    };
+
+    setLocalData(PROFILE_KEY, profile);
+    return sessionUser;
+  },
+
   getProfile: () => {
     return getLocalData(PROFILE_KEY, {
+      _id: 'local_user',
       name: 'Offline User',
       email: 'offline@fit.com',
       age: 25,
@@ -42,7 +113,13 @@ export const localStorageFallback = {
   updateProfile: (profileData) => {
     const current = localStorageFallback.getProfile();
     const updated = { ...current, ...profileData };
+    const users = getLocalData(LOCAL_USERS_KEY, []);
+    const updatedUsers = users.map((user) =>
+      user.email === updated.email ? { ...user, ...updated, password: user.password } : user
+    );
+
     setLocalData(PROFILE_KEY, updated);
+    setLocalData(LOCAL_USERS_KEY, updatedUsers);
     localStorageFallback.enqueueSyncAction('UPDATE_PROFILE', updated);
     return updated;
   },

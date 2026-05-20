@@ -10,6 +10,23 @@ const api = axios.create({
   },
 });
 
+const isLocalToken = () => localStorage.getItem('token')?.startsWith('local_');
+
+const parseRequestData = (data) => {
+  if (!data) return {};
+  if (data instanceof FormData) {
+    return Object.fromEntries(data.entries());
+  }
+  if (typeof data === 'string') {
+    try {
+      return JSON.parse(data);
+    } catch {
+      return {};
+    }
+  }
+  return data;
+};
+
 // Request Interceptor: Attach JWT Token
 api.interceptors.request.use(
   (config) => {
@@ -42,17 +59,39 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    const isNetworkError = !error.response || error.response.status >= 502;
+    const status = error.response?.status;
+    const isNetworkError = !error.response || status >= 500;
     const isBrowserOffline = !navigator.onLine;
+    const shouldUseLocalFallback = isNetworkError || isBrowserOffline || isLocalToken();
 
-    // If it's a network disconnection or server-down event
-    if (isNetworkError || isBrowserOffline) {
+    // If the server, database, or current session is local-only, service the app from Local Storage.
+    if (shouldUseLocalFallback && originalRequest) {
       setOfflineStatus(true);
-      console.warn('Network issue or offline mode detected. Servicing request from Local Storage...');
+      console.warn('Local mode detected. Servicing request from Local Storage...');
 
       const { url, method, data, params } = originalRequest;
+      const payload = parseRequestData(data);
       
       // --- INTERCEPT WRITES AND READS Gracefully ---
+
+      // 0. Local auth when MongoDB/server is unavailable
+      if (url.includes('/auth/register') && method === 'post') {
+        try {
+          const user = localStorageFallback.registerUser(payload);
+          return { data: user, status: 201, statusText: 'Created', headers: {}, config: originalRequest };
+        } catch (localError) {
+          return Promise.reject(localError);
+        }
+      }
+
+      if (url.includes('/auth/login') && method === 'post') {
+        try {
+          const user = localStorageFallback.loginUser(payload);
+          return { data: user, status: 200, statusText: 'OK', headers: {}, config: originalRequest };
+        } catch (localError) {
+          return Promise.reject(localError);
+        }
+      }
       
       // 1. Profile Retrieval
       if (url.includes('/profile') && method === 'get') {
@@ -62,7 +101,6 @@ api.interceptors.response.use(
 
       // 2. Profile Update
       if (url.includes('/profile/update') && method === 'put') {
-        const payload = JSON.parse(data);
         const updated = localStorageFallback.updateProfile(payload);
         return { data: updated, status: 200, statusText: 'OK', headers: {}, config: originalRequest };
       }
@@ -82,26 +120,6 @@ api.interceptors.response.use(
 
       // 5. Add Meal
       if (url.includes('/meals/add') && method === 'post') {
-        let payload = {};
-        try {
-          payload = typeof data === 'string' ? JSON.parse(data) : data;
-        } catch (e) {
-          // If FormData is used (for image files upload)
-          if (data instanceof FormData) {
-            payload = {
-              mealType: data.get('mealType'),
-              foodName: data.get('foodName'),
-              calories: data.get('calories'),
-              protein: data.get('protein'),
-              carbs: data.get('carbs'),
-              fats: data.get('fats'),
-              sugar: data.get('sugar'),
-              fiber: data.get('fiber'),
-              barcode: data.get('barcode'),
-              image: '', // Cannot save file locally, fallback to empty
-            };
-          }
-        }
         const newMeal = localStorageFallback.addMeal(payload);
         return { data: newMeal, status: 201, statusText: 'Created', headers: {}, config: originalRequest };
       }
@@ -123,14 +141,12 @@ api.interceptors.response.use(
 
       // 8. Add Water
       if (url.includes('/water/add') && method === 'post') {
-        const payload = JSON.parse(data);
         const log = localStorageFallback.addWater(payload.amount, payload.date);
         return { data: log, status: 201, statusText: 'Created', headers: {}, config: originalRequest };
       }
 
       // 9. Barcode / AI Scan Lookups offline
       if (url.includes('/barcode/scan') && method === 'post') {
-        const payload = JSON.parse(data);
         // Simple offline fallback parser
         const mockItem = {
           foodName: payload.barcode ? `Offline Scanned Product (${payload.barcode})` : payload.query,
@@ -147,10 +163,7 @@ api.interceptors.response.use(
         return { data: mockItem, status: 200, statusText: 'OK', headers: {}, config: originalRequest };
       }
 
-      // Blocked auth operations when offline
-      if (url.includes('/auth/login') || url.includes('/auth/register')) {
-        return Promise.reject(new Error('Authentication requires an active internet connection.'));
-      }
+      return Promise.reject(new Error('This action is not available in local mode yet.'));
     }
 
     return Promise.reject(error);

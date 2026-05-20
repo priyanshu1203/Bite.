@@ -38,6 +38,12 @@ const App = () => {
   // 2. Periodic sync check (runs every 20 seconds when online)
   useEffect(() => {
     const handlePeriodicSync = async () => {
+      const token = localStorage.getItem('token');
+      if (token?.startsWith('local_')) {
+        dispatch(setOfflineStatus(true));
+        return;
+      }
+
       // If offline, do not attempt sync
       if (!navigator.onLine) {
         dispatch(setOfflineStatus(true));

@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
@@ -24,6 +25,17 @@ app.get('/', (req, res) => {
     status: 'online',
     message: 'AI Nutrition Tracker Server is running smoothly',
     timestamp: new Date(),
+  });
+});
+
+app.use('/api', (req, res, next) => {
+  if (mongoose.connection.readyState === 1) {
+    return next();
+  }
+
+  return res.status(503).json({
+    message: 'Database unavailable. The client can continue in local mode.',
+    localMode: true,
   });
 });
 
