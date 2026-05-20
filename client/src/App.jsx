@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProfile } from './store/authSlice';
 import { syncOfflineMealsThunk, fetchTodayMeals } from './store/mealSlice';
 import { syncOfflineWaterThunk, fetchTodayWater } from './store/waterSlice';
-import { setOfflineStatus } from './store/uiSlice';
+import { applyTheme, setOfflineStatus } from './store/uiSlice';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -22,6 +22,11 @@ import AdminDashboard from './pages/AdminDashboard';
 const App = () => {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
+  const { theme } = useSelector((state) => state.ui);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   // 1. Load profile on startup if token exists
   useEffect(() => {

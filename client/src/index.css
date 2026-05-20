@@ -19,12 +19,90 @@
   }
 }
 
+:root {
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='light'] body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
 /* Glassmorphism helpers */
 .glass-panel {
   background: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+:root[data-theme='light'] .app-shell,
+:root[data-theme='light'] .app-shell .bg-slate-950 {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+:root[data-theme='light'] .app-shell .bg-slate-950\/60,
+:root[data-theme='light'] .app-shell .bg-slate-950\/80,
+:root[data-theme='light'] .app-shell .bg-slate-950\/40 {
+  background-color: rgb(248 250 252 / 0.78) !important;
+}
+
+:root[data-theme='light'] .app-shell .bg-slate-900,
+:root[data-theme='light'] .app-shell .bg-slate-900\/60,
+:root[data-theme='light'] .app-shell .bg-slate-900\/80 {
+  background-color: rgb(255 255 255 / 0.88) !important;
+}
+
+:root[data-theme='light'] .app-shell .border-slate-950,
+:root[data-theme='light'] .app-shell .border-slate-900,
+:root[data-theme='light'] .app-shell .border-slate-900\/40,
+:root[data-theme='light'] .app-shell .border-slate-900\/50,
+:root[data-theme='light'] .app-shell .border-slate-900\/55,
+:root[data-theme='light'] .app-shell .border-slate-900\/60,
+:root[data-theme='light'] .app-shell .border-slate-800 {
+  border-color: rgb(203 213 225 / 0.9) !important;
+}
+
+:root[data-theme='light'] .app-shell .text-white,
+:root[data-theme='light'] .app-shell .text-slate-100,
+:root[data-theme='light'] .app-shell .text-slate-200,
+:root[data-theme='light'] .app-shell .text-slate-300 {
+  color: #0f172a !important;
+}
+
+:root[data-theme='light'] .app-shell .text-slate-400 {
+  color: #475569 !important;
+}
+
+:root[data-theme='light'] .app-shell .text-slate-500 {
+  color: #64748b !important;
+}
+
+:root[data-theme='light'] .app-shell .bg-indigo-600,
+:root[data-theme='light'] .app-shell .bg-indigo-600\/90,
+:root[data-theme='light'] .app-shell .bg-emerald-600,
+:root[data-theme='light'] .app-shell .bg-gradient-to-r,
+:root[data-theme='light'] .app-shell .bg-gradient-to-tr {
+  color: #fff !important;
+}
+
+:root[data-theme='light'] .app-shell .bg-indigo-600 *,
+:root[data-theme='light'] .app-shell .bg-indigo-600\/90 *,
+:root[data-theme='light'] .app-shell .bg-emerald-600 *,
+:root[data-theme='light'] .app-shell .bg-gradient-to-r *,
+:root[data-theme='light'] .app-shell .bg-gradient-to-tr * {
+  color: #fff !important;
+}
+
+:root[data-theme='light'] .glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(148, 163, 184, 0.34);
+  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.3);
 }
 
 .glass-panel-hover {
@@ -38,10 +116,21 @@
   transform: translateY(-2px);
 }
 
+:root[data-theme='light'] .glass-panel-hover:hover {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(99, 102, 241, 0.28);
+}
+
 .glass-input {
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
   @apply focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all duration-200 rounded-xl px-4 py-2.5 text-slate-100 placeholder-slate-500;
+}
+
+:root[data-theme='light'] .glass-input {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(148, 163, 184, 0.55);
+  color: #0f172a !important;
 }
 
 /* Custom Scrollbar */

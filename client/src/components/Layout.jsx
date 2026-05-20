@@ -45,7 +45,7 @@ const Layout = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 transition-colors duration-200">
+    <div className="app-shell flex min-h-screen bg-slate-950 text-slate-100 transition-colors duration-200">
       <OfflineBadge />
 
       {/* Backdrop overlay for mobile when sidebar is open */}
@@ -68,7 +68,7 @@ const Layout = () => {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-500 shadow-lg shadow-indigo-500/20">
               <Flame className="h-5 w-5 text-white" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-400 bg-clip-text text-transparent">
                 FitAI Nutrition
               </h1>
@@ -93,15 +93,15 @@ const Layout = () => {
                 to={item.path}
                 onClick={() => dispatch(setSidebarOpen(false))}
                 className={({ isActive }) =>
-                  `flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? 'bg-indigo-500/10 text-indigo-400 border-l-2 border-indigo-500 font-semibold'
                       : 'text-slate-400 hover:bg-slate-900/60 hover:text-slate-200'
                   }`
                 }
               >
-                <item.icon className="h-5 w-5" />
-                {item.name}
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <span className="min-w-0 truncate">{item.name}</span>
               </NavLink>
             ))}
           </nav>
@@ -123,15 +123,15 @@ const Layout = () => {
             {/* Light/Dark Toggle */}
             <button
               onClick={() => dispatch(toggleTheme())}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900/60 py-2.5 text-xs text-slate-400 hover:bg-slate-900 hover:text-slate-200 border border-slate-900/55"
+              className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900/60 px-2 py-2.5 text-xs text-slate-400 hover:bg-slate-900 hover:text-slate-200 border border-slate-900/55"
             >
               {theme === 'dark' ? (
                 <>
-                  <Sun className="h-4 w-4" /> Light
+                  <Sun className="h-4 w-4 flex-shrink-0" /> <span className="truncate">Light</span>
                 </>
               ) : (
                 <>
-                  <Moon className="h-4 w-4" /> Dark
+                  <Moon className="h-4 w-4 flex-shrink-0" /> <span className="truncate">Dark</span>
                 </>
               )}
             </button>

@@ -54,17 +54,17 @@ const WaterTracker = ({ current = 0, target = 2000, onAdd }) => {
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => handleQuickAdd(250)}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900/60 py-2.5 text-xs font-semibold text-sky-400 hover:bg-slate-900 hover:text-white border border-slate-900/50 hover:border-sky-500/30 transition-all duration-200"
+            className="flex min-w-0 items-center justify-center gap-1.5 rounded-xl bg-slate-900/60 px-2 py-2.5 text-xs font-semibold text-sky-400 hover:bg-slate-900 hover:text-white border border-slate-900/50 hover:border-sky-500/30 transition-all duration-200"
           >
-            <Plus className="h-3.5 w-3.5" />
-            Glass (250ml)
+            <Plus className="h-3.5 w-3.5 flex-shrink-0" />
+            <span className="truncate">Glass (250ml)</span>
           </button>
           <button
             onClick={() => handleQuickAdd(500)}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900/60 py-2.5 text-xs font-semibold text-sky-400 hover:bg-slate-900 hover:text-white border border-slate-900/50 hover:border-sky-500/30 transition-all duration-200"
+            className="flex min-w-0 items-center justify-center gap-1.5 rounded-xl bg-slate-900/60 px-2 py-2.5 text-xs font-semibold text-sky-400 hover:bg-slate-900 hover:text-white border border-slate-900/50 hover:border-sky-500/30 transition-all duration-200"
           >
-            <Plus className="h-3.5 w-3.5" />
-            Bottle (500ml)
+            <Plus className="h-3.5 w-3.5 flex-shrink-0" />
+            <span className="truncate">Bottle (500ml)</span>
           </button>
         </div>
 
